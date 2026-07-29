@@ -224,6 +224,6 @@ if __name__ == "__main__":
     info = inspect_model(demo_model, model_name="DemoResNet")
 
     print()
-    print("get_value(info, idx=1, name='weight'):", get_value(info, idx=1, name="weight").shape)
-    print("get_value(info, idx=1, name='running_mean'):", get_value(info, idx=1, name="running_mean").shape)
-    print("get_value(info, idx=1) keys:", list(get_value(info, idx=1).keys()))
+    print("get_value(info, idx=1, name='weight') : ", get_value(info, idx=1, name="weight").shape)
+    print("get_value(info, idx=1, name='running_mean') : ", get_value(info, idx=1, name="running_mean").shape)
+    print("get_value(info, idx=1) keys : ", list(get_value(info, idx=1).keys()))

@@ -63,4 +63,4 @@ if __name__ == "__main__":
     if torch.cuda.is_available():
         measure_layer_time(model, input_shape, device="cuda")
     else:
-        print("CUDA not available, skipping GPU benchmark")
+        print("CUDA not available, skipping GPU benchmark.")

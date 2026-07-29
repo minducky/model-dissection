@@ -72,7 +72,7 @@ if __name__ == "__main__":
     Example: conv(k=3,s=1,d=1) -> conv(k=3,s=1,d=2) -> maxpool(k=2,s=2,d=1)
     """
     layer_params = [
-        (3, 1, 1),
+        (3, 1, 2),
         (3, 1, 2),
         (2, 2, 1),
     ]
