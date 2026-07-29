@@ -5,7 +5,13 @@ import time
 import torch
 
 
-def measure_layer_time(model, input_shape, device="cpu", n_warmup=10, n_iter=100):
+def measure_layer_time(
+    model: torch.nn.Module,
+    input_shape: tuple[int, ...],
+    device: str = "cpu",
+    n_warmup: int = 10,
+    n_iter: int = 100,
+) -> float:
     """Measure forward pass time of a torch.nn.Module in milliseconds.
 
     Args:

@@ -9,16 +9,19 @@ Typical usage::
     w = get_value(info, idx=5, name="weight")  # fetch a specific tensor
 """
 
+from typing import Any
+
+import torch
 import torch.nn as nn
 
 _INDENT_UNIT = 2  # spaces per nesting level
 
 
-def _is_container(module):
+def _is_container(module: nn.Module) -> bool:
     return len(list(module.named_children())) > 0
 
 
-def _leaf_values(module):
+def _leaf_values(module: nn.Module) -> dict[str, tuple[str, torch.Tensor]]:
     """Return {name: (kind, tensor)} for a leaf module's params and buffers."""
     values = {}
     for name, tensor in module.named_parameters(recurse=False):
@@ -28,7 +31,9 @@ def _leaf_values(module):
     return values
 
 
-def _build_tree(module, path="", ancestor_count=0):
+def _build_tree(
+    module: nn.Module, path: str = "", ancestor_count: int = 0
+) -> list[dict[str, Any]]:
     """Recursively walk `module` into a flat list of container/leaf nodes."""
     nodes = []
     type_counters = {}
@@ -57,7 +62,7 @@ def _build_tree(module, path="", ancestor_count=0):
     return nodes
 
 
-def inspect_model(model, model_name=None):
+def inspect_model(model: nn.Module, model_name: str | None = None) -> dict[str, Any]:
     """Print the model's structure and return a lookup structure for get_value.
 
     Args:
@@ -83,11 +88,8 @@ def inspect_model(model, model_name=None):
         })
     nodes.extend(_build_tree(model))
 
-    leaf_nodes = [n for n in nodes if n["kind"] == "leaf"]
-    n_idx_digits = len(str(max(len(leaf_nodes) - 1, 0)))
-
-    # Assign idx and pre-render each leaf's rows (idx_cell, calc, type, name, shape).
-    rendered_rows = []  # list of (node_ancestor_count, idx_cell_content, calc, type_, name_, shape_)
+    # Pre-render each leaf's rows as (node, idx_cell, calc, type_, name_, shape_).
+    rendered_rows = []
     idx = 0
     for node in nodes:
         if node["kind"] != "leaf":
@@ -162,7 +164,7 @@ def inspect_model(model, model_name=None):
     return {"model_name": model_name, "entries": entries}
 
 
-def get_value(info, idx, name=None):
+def get_value(info: dict[str, Any], idx: int, name: str | None = None) -> Any:
     """Look up a Param/Buffer tensor from the structure returned by inspect_model.
 
     Args:
@@ -224,6 +226,12 @@ if __name__ == "__main__":
     info = inspect_model(demo_model, model_name="DemoResNet")
 
     print()
-    print("get_value(info, idx=1, name='weight') : ", get_value(info, idx=1, name="weight").shape)
-    print("get_value(info, idx=1, name='running_mean') : ", get_value(info, idx=1, name="running_mean").shape)
+    print(
+        "get_value(info, idx=1, name='weight') : ",
+        get_value(info, idx=1, name="weight").shape,
+    )
+    print(
+        "get_value(info, idx=1, name='running_mean') : ",
+        get_value(info, idx=1, name="running_mean").shape,
+    )
     print("get_value(info, idx=1) keys : ", list(get_value(info, idx=1).keys()))

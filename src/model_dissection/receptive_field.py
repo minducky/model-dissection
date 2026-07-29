@@ -1,9 +1,12 @@
 """Compute the effective receptive field of a stack of conv/pooling layers."""
 
+from collections.abc import Sequence
+from typing import Any
+
 import numpy as np
 
 
-def cal_RF(layer_params):
+def cal_RF(layer_params: Sequence[tuple[Any, Any, Any]]) -> dict[str, list[np.ndarray]]:
     """Compute the accumulated receptive field after each layer.
 
     Each layer (convolution or pooling, no distinction needed) contributes to
