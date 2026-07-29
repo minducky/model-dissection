@@ -8,7 +8,7 @@ time (`layer_time`), compute a stack's effective receptive field
 ## Usage
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/minducky/model-dissection.git
 cd model-dissection
 pip install -e .
 ```
