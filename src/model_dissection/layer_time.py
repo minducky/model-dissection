@@ -57,6 +57,46 @@ def measure_layer_time(
     return elapsed
 
 
+def measure_train_epoch_time(
+    model: torch.nn.Module,
+    dataloader,
+    optimizer: torch.optim.Optimizer,
+    criterion: torch.nn.Module,
+    device: str = "cpu",
+) -> float:
+    """Measure wall-clock time for one training epoch (forward+backward+step).
+
+    Args:
+        model: The module to benchmark.
+        dataloader: Yields batches; only the first two elements of each
+            batch are used, as ``(inputs, targets)``.
+        optimizer: Optimizer whose ``step()``/``zero_grad()`` are timed.
+        criterion: Loss function applied to ``(model(inputs), targets)``.
+        device: Device to run the benchmark on (e.g. ``"cpu"``, ``"cuda"``,
+            ``"cuda:1"``).
+
+    Returns:
+        Total epoch time in seconds.
+    """
+    model = model.to(device)
+    model.train()
+    is_cuda = str(device).startswith("cuda")
+
+    if is_cuda:
+        torch.cuda.synchronize()
+    start = time.perf_counter()
+    for batch in dataloader:
+        inputs, targets = batch[0].to(device), batch[1].to(device)
+        optimizer.zero_grad()
+        loss = criterion(model(inputs), targets)
+        loss.backward()
+        optimizer.step()
+    if is_cuda:
+        torch.cuda.synchronize()
+
+    return time.perf_counter() - start
+
+
 if __name__ == "__main__":
     """
     Set layer/model & input_shape
